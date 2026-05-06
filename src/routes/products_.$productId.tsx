@@ -12,7 +12,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 
-export const Route = createFileRoute("/products/$productId")({
+export const Route = createFileRoute("/products_/$productId")({
   head: ({ params }) => {
     const product = getProductDetail(params.productId);
     return {
