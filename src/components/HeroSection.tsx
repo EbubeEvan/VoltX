@@ -44,12 +44,16 @@ export function HeroSection() {
           </p>
 
           <div className="mt-10 flex flex-wrap gap-4">
-            <Button variant="hero" size="xl">
-              Shop Now <ArrowRight className="ml-1 h-5 w-5" />
-            </Button>
-            <Button variant="glass" size="xl">
-              Explore Deals
-            </Button>
+            <Link to="/products">
+              <Button variant="hero" size="xl">
+                Shop Now <ArrowRight className="ml-1 h-5 w-5" />
+              </Button>
+            </Link>
+            <Link to="/deals">
+              <Button variant="glass" size="xl">
+                Explore Deals
+              </Button>
+            </Link>
           </div>
 
           {/* Stats */}
