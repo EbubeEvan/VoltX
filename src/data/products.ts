@@ -132,7 +132,7 @@ export const flashDeals: Product[] = [
   },
   {
     id: "13",
-    name: "Samsung 49\" Odyssey OLED G9",
+    name: 'Samsung 49" Odyssey OLED G9',
     brand: "Samsung",
     price: 1299,
     originalPrice: 1799,
@@ -142,3 +142,45 @@ export const flashDeals: Product[] = [
     badge: "Flash Deal",
   },
 ];
+
+export const allProducts = [...featuredProducts, ...newArrivals, ...flashDeals];
+
+export function getProductById(id: string): Product | undefined {
+  return allProducts.find((p) => p.id === id);
+}
+
+export interface ProductDetail extends Product {
+  description: string;
+  specs: Record<string, string>;
+  images: string[];
+}
+
+const productDetails: Record<string, Omit<ProductDetail, keyof Product>> = {
+  "1": {
+    description: "The most powerful iPhone ever. Featuring a titanium design, the A17 Pro chip, and a 48MP camera system with 5x optical zoom.",
+    specs: { Display: "6.7\" Super Retina XDR OLED", Chip: "A17 Pro", Storage: "256GB", Camera: "48MP + 12MP + 12MP", Battery: "Up to 29 hours video" },
+    images: [
+      "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&h=800&fit=crop",
+    ],
+  },
+  "2": {
+    description: "Supercharged by the M3 Pro chip, the MacBook Pro delivers exceptional performance and battery life in a stunning Liquid Retina XDR display.",
+    specs: { Display: "14.2\" Liquid Retina XDR", Chip: "Apple M3 Pro", Memory: "18GB Unified", Storage: "512GB SSD", Battery: "Up to 17 hours" },
+    images: [
+      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800&h=800&fit=crop",
+      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&h=800&fit=crop",
+    ],
+  },
+};
+
+export function getProductDetail(id: string): ProductDetail | undefined {
+  const product = getProductById(id);
+  if (!product) return undefined;
+  const details = productDetails[id] || {
+    description: `Experience premium quality with the ${product.name}. Designed for performance and built to last.`,
+    specs: { Brand: product.brand, Rating: `${product.rating}/5`, Reviews: `${product.reviews}` },
+    images: [product.image],
+  };
+  return { ...product, ...details };
+}
