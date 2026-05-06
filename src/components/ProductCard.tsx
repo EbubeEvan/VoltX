@@ -59,9 +59,11 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             <Button variant="neon" size="icon" className="h-10 w-10 rounded-full" onClick={(e) => { e.preventDefault(); addItem(product); }}>
               <ShoppingCart className="h-4 w-4" />
             </Button>
-            <Button variant="glass" size="icon" className="h-10 w-10 rounded-full">
-              <Eye className="h-4 w-4" />
-            </Button>
+            <Link to="/products/$productId" params={{ productId: product.id }}>
+              <Button variant="glass" size="icon" className="h-10 w-10 rounded-full">
+                <Eye className="h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </Link>
