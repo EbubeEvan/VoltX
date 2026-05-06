@@ -1,26 +1,34 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { HeroSection } from "@/components/HeroSection";
+import { CategoryNav } from "@/components/CategoryNav";
+import { FlashDeals } from "@/components/FlashDeals";
+import { FeaturedProducts } from "@/components/FeaturedProducts";
+import { NewArrivals } from "@/components/NewArrivals";
+import { TrustBar } from "@/components/TrustBar";
+import { Newsletter } from "@/components/Newsletter";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "VoltX — Next-Gen Electronics, Delivered" },
+      { name: "description", content: "Premium smartphones, laptops, TVs, audio gear and gaming accessories at unbeatable prices. Free shipping on orders over $99." },
+      { property: "og:title", content: "VoltX — Next-Gen Electronics, Delivered" },
+      { property: "og:description", content: "Premium smartphones, laptops, TVs, audio gear and gaming accessories at unbeatable prices." },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
-
 function Index() {
-  return <PlaceholderIndex />;
+  return (
+    <>
+      <HeroSection />
+      <CategoryNav />
+      <FlashDeals />
+      <FeaturedProducts />
+      <NewArrivals />
+      <TrustBar />
+      <Newsletter />
+    </>
+  );
 }
