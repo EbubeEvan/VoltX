@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { SlidersHorizontal, ChevronDown, Grid3X3, LayoutList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
-import { featuredProducts, newArrivals, flashDeals } from "@/data/products";
+import { allProducts } from "@/data/products";
 
 export const Route = createFileRoute("/products")({
   head: () => ({
@@ -16,7 +16,6 @@ export const Route = createFileRoute("/products")({
   component: ProductsPage,
 });
 
-const allProducts = [...featuredProducts, ...newArrivals, ...flashDeals];
 
 const brands = ["All", "Apple", "Samsung", "Sony", "LG", "Razer", "Bose", "DJI"];
 const sortOptions = ["Best Selling", "Price: Low to High", "Price: High to Low", "Newest", "Top Rated"];
