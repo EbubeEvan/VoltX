@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
 import { Heart, ShoppingCart, Star, Eye } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/context/CartContext";
+import { useWishlist } from "@/context/WishlistContext";
 
 export interface Product {
   id: string;
@@ -16,6 +19,9 @@ export interface Product {
 }
 
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
+  const { addItem } = useCart();
+  const { toggleWishlist, isWishlisted } = useWishlist();
+  const liked = isWishlisted(product.id);
   const discount = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
     : 0;
@@ -27,7 +33,6 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
       transition={{ delay: index * 0.08, duration: 0.5 }}
       className="glass-card group relative overflow-hidden transition-all duration-300 hover:border-primary/30 hover:shadow-[var(--shadow-neon)]"
     >
-      {/* Badge */}
       {product.badge && (
         <div className="absolute left-3 top-3 z-10 rounded-md bg-primary px-2.5 py-1 text-xs font-bold text-primary-foreground">
           {product.badge}
@@ -39,38 +44,38 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         </div>
       )}
 
-      {/* Image */}
-      <div className="relative aspect-square overflow-hidden bg-secondary/30 p-6">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
-          loading="lazy"
-        />
-        {/* Hover actions */}
-        <div className="absolute inset-0 flex items-center justify-center gap-2 bg-background/60 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
-          <Button variant="glass" size="icon" className="h-10 w-10 rounded-full">
-            <Heart className="h-4 w-4" />
-          </Button>
-          <Button variant="neon" size="icon" className="h-10 w-10 rounded-full">
-            <ShoppingCart className="h-4 w-4" />
-          </Button>
-          <Button variant="glass" size="icon" className="h-10 w-10 rounded-full">
-            <Eye className="h-4 w-4" />
-          </Button>
+      <Link to="/products/$productId" params={{ productId: product.id }}>
+        <div className="relative aspect-square overflow-hidden bg-secondary/30 p-6">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-110"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 flex items-center justify-center gap-2 bg-background/60 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
+            <Button variant="glass" size="icon" className={`h-10 w-10 rounded-full ${liked ? "text-sale" : ""}`} onClick={(e) => { e.preventDefault(); toggleWishlist(product.id); }}>
+              <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
+            </Button>
+            <Button variant="neon" size="icon" className="h-10 w-10 rounded-full" onClick={(e) => { e.preventDefault(); addItem(product); }}>
+              <ShoppingCart className="h-4 w-4" />
+            </Button>
+            <Button variant="glass" size="icon" className="h-10 w-10 rounded-full">
+              <Eye className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-      </div>
+      </Link>
 
-      {/* Info */}
       <div className="p-4">
         <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
           {product.brand}
         </p>
-        <h3 className="mt-1 line-clamp-2 text-sm font-semibold text-foreground">
-          {product.name}
-        </h3>
+        <Link to="/products/$productId" params={{ productId: product.id }}>
+          <h3 className="mt-1 line-clamp-2 text-sm font-semibold text-foreground hover:text-primary">
+            {product.name}
+          </h3>
+        </Link>
 
-        {/* Rating */}
         <div className="mt-2 flex items-center gap-1.5">
           <div className="flex items-center gap-0.5">
             {Array.from({ length: 5 }).map((_, i) => (
@@ -83,7 +88,6 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           <span className="text-xs text-muted-foreground">({product.reviews})</span>
         </div>
 
-        {/* Price */}
         <div className="mt-3 flex items-baseline gap-2">
           <span className="font-display text-xl font-bold text-foreground">
             ${product.price.toLocaleString()}
@@ -95,7 +99,6 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           )}
         </div>
 
-        {/* Stock */}
         {product.inStock === false && (
           <p className="mt-2 text-xs font-medium text-destructive">Out of Stock</p>
         )}
