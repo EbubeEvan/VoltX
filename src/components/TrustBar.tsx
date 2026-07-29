@@ -1,7 +1,7 @@
 import { Shield, Truck, Headphones, RotateCcw } from "lucide-react";
 
 const badges = [
-  { icon: Truck, title: "Free Shipping", desc: "On orders over $99" },
+  { icon: Truck, title: "Free Shipping", desc: "On orders over ₦99" },
   { icon: Shield, title: "Secure Payment", desc: "256-bit encryption" },
   { icon: RotateCcw, title: "Easy Returns", desc: "30-day return policy" },
   { icon: Headphones, title: "24/7 Support", desc: "Always here to help" },

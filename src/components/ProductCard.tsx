@@ -115,11 +115,11 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
 
         <div className="mt-3 flex items-baseline gap-2">
           <span className="font-display text-xl font-bold text-foreground">
-            ${product.price.toLocaleString()}
+            ₦{product.price.toLocaleString()}
           </span>
           {product.originalPrice && (
             <span className="text-sm text-muted-foreground line-through">
-              ${product.originalPrice.toLocaleString()}
+              ₦{product.originalPrice.toLocaleString()}
             </span>
           )}
         </div>

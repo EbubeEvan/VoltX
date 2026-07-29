@@ -58,8 +58,8 @@ export function HeroSection() {
           {/* Stats */}
           <div className="mt-14 flex gap-10">
             {[
-              { value: "500+", label: "Products" },
-              { value: "50K+", label: "Happy Customers" },
+              { value: "15", label: "Products" },
+              { value: "5000", label: "Happy Customers" },
               { value: "24/7", label: "Support" },
             ].map((stat) => (
               <div key={stat.label}>
