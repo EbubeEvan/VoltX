@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { Toaster } from "sonner";
 import { CartProvider } from "@/context/CartContext";
 import { WishlistProvider } from "@/context/WishlistContext";
 
@@ -79,7 +80,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "VoltX — Next-Gen Electronics, Delivered" },
       { name: "description", content: "Premium electronics at unbeatable prices" },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "/opengraph.png" },
       { name: "twitter:card", content: "summary" },
+      { name: "twitter:image", content: "/opengraph.png" },
     ],
     links: [
       { rel: "icon", href: "/v-logo.svg", type: "image/svg+xml" },
@@ -127,6 +130,18 @@ function RootComponent() {
             </main>
             <Footer />
           </div>
+          <Toaster
+            position="top-right"
+            closeButton
+            toastOptions={{
+              style: {
+                background: "var(--sonner-bg)",
+                border: "1px solid var(--sonner-border)",
+                color: "var(--sonner-text)",
+                backdropFilter: "blur(12px)",
+              },
+            }}
+          />
         </WishlistProvider>
       </CartProvider>
     </QueryClientProvider>

@@ -127,6 +127,13 @@
   --shadow-neon: 0 0 20px oklch(0.75 0.15 195 / 30%);
   --shadow-card: 0 8px 32px oklch(0 0 0 / 40%);
   --shadow-glow: 0 0 40px oklch(0.75 0.15 195 / 20%);
+
+  /* Sonner toaster */
+  --sonner-bg: var(--glass);
+  --sonner-border: var(--glass-border);
+  --sonner-text: var(--foreground);
+  --sonner-success: var(--success);
+  --sonner-error: var(--destructive);
 }
 
 @layer base {

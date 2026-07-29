@@ -107,6 +107,29 @@ export const orderItems = pgTable("order_items", {
   unitPrice: integer("unit_price").notNull(),
 });
 
+export const cartItems = pgTable("cart_items", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  productId: integer("product_id").notNull(),
+  quantity: integer("quantity").notNull().default(1),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const wishlistItems = pgTable(
+  "wishlist_items",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    productId: integer("product_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.productId] })],
+);
+
 export type CustomerReview = {
   id: string;
   author: string;

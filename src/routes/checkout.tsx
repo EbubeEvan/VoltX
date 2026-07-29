@@ -1,17 +1,16 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Trash2, Minus, Plus, ShoppingBag, Lock } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
 import { getCheckoutSession } from "@/lib/server/profile";
+import { createOrder } from "@/lib/server/orders";
 import { SkeletonCheckout } from "@/components/PageSkeleton";
 
 export const Route = createFileRoute("/checkout")({
   loader: async () => {
     const user = await getCheckoutSession();
-    if (!user) {
-      throw redirect({ to: "/login", search: { redirect: "/checkout" } });
-    }
     return { user };
   },
   pendingComponent: SkeletonCheckout,
@@ -25,6 +24,7 @@ export const Route = createFileRoute("/checkout")({
 });
 
 function CheckoutPage() {
+  const navigate = useNavigate();
   const { user } = Route.useLoaderData();
   const { items, updateQuantity, removeItem, totalPrice, totalItems, clearCart } = useCart();
 
@@ -49,14 +49,18 @@ function CheckoutPage() {
 
   const shippingThreshold = 99000;
   const shipping = totalPrice >= shippingThreshold ? 0 : 5000;
-  const taxRate = 0.075;
+  const taxRate = 0.01;
   const tax = Math.round(totalPrice * taxRate);
   const orderTotal = totalPrice + shipping + tax;
 
   const handlePaystack = () => {
+    if (!user) {
+      navigate({ to: "/login", search: { redirect: "/checkout" } });
+      return;
+    }
     const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
     if (!paystackKey) {
-      alert("Paystack is not configured. Set VITE_PAYSTACK_PUBLIC_KEY in your environment.");
+      toast.error("Paystack is not configured. Set VITE_PAYSTACK_PUBLIC_KEY in your environment.");
       return;
     }
 
@@ -68,15 +72,44 @@ function CheckoutPage() {
     const handler = (window as unknown as PaystackPopWindow).PaystackPop?.setup({
       key: paystackKey,
       email: user?.email || "guest@example.com",
-      amount: orderTotal,
+      amount: Math.round(orderTotal * 100),
       currency: "NGN",
       ref,
-      onClose: () => {},
-      callback: async () => {
-        clearCart();
+      onClose: () => {
+        toast("Payment cancelled", { icon: "🛒" });
+      },
+      callback: () => {
+        createOrder({
+          data: {
+            items: items.map((i) => ({
+              productId: Number(i.product.id),
+              productName: i.product.name,
+              quantity: i.quantity,
+              unitPrice: i.product.price,
+            })),
+            shipping,
+            tax,
+            total: orderTotal,
+            reference: ref,
+          },
+        })
+          .then(() => {
+            clearCart();
+            toast.success("Payment successful!");
+            navigate({ to: "/profile" });
+          })
+          .catch(() => {
+            toast.error("Order creation failed. Please contact support.");
+          });
       },
     });
-    handler?.openIframe();
+
+    if (!handler) {
+      toast.error("Payment system failed to load. Please refresh and try again.");
+      return;
+    }
+
+    handler.openIframe();
   };
 
   return (

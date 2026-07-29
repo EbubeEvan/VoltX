@@ -1,15 +1,40 @@
-import { Link } from "@tanstack/react-router";
-import { Search, ShoppingCart, User, Heart, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Search, ShoppingCart, User, Heart, Menu, X, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { authClient } from "@/lib/auth-client";
 
 export function Header() {
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { totalItems } = useCart();
-  const { wishlist } = useWishlist();
+  const [searchQuery, setSearchQuery] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { totalItems, clearCart } = useCart();
+  const { wishlist, clearWishlist } = useWishlist();
+  const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    if (searchOpen && inputRef.current) inputRef.current.focus();
+  }, [searchOpen]);
+
+  function handleSearch() {
+    const q = searchQuery.trim();
+    if (q) {
+      navigate({ to: "/products", search: { search: q } });
+      setSearchQuery("");
+      setSearchOpen(false);
+    }
+  }
+
+  async function handleLogout() {
+    clearCart();
+    clearWishlist();
+    await authClient.signOut();
+    navigate({ to: "/" });
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -45,12 +70,31 @@ export function Header() {
           {searchOpen ? (
             <div className="flex items-center gap-2">
               <input
+                ref={inputRef}
                 type="text"
                 placeholder="Search products..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSearch();
+                  if (e.key === "Escape") {
+                    setSearchOpen(false);
+                    setSearchQuery("");
+                  }
+                }}
                 className="h-9 w-48 rounded-lg border border-input bg-secondary px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary"
-                autoFocus
               />
-              <Button variant="ghost" size="icon" onClick={() => setSearchOpen(false)}>
+              <Button variant="ghost" size="icon" onClick={handleSearch}>
+                <Search className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setSearchOpen(false);
+                  setSearchQuery("");
+                }}
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -59,7 +103,7 @@ export function Header() {
               <Search className="h-4 w-4" />
             </Button>
           )}
-          <Link to="/profile">
+          <Link to="/wishlist">
             <Button variant="ghost" size="icon" className="relative hidden sm:inline-flex">
               <Heart className="h-4 w-4" />
               {wishlist.size > 0 && (
@@ -79,11 +123,34 @@ export function Header() {
               )}
             </Button>
           </Link>
-          <Link to="/profile">
-            <Button variant="ghost" size="icon" className="hidden sm:inline-flex">
-              <User className="h-4 w-4" />
-            </Button>
-          </Link>
+          {!isPending && (
+            <>
+              {session ? (
+                <>
+                  <Link to="/profile">
+                    <Button variant="ghost" size="icon" className="hidden sm:inline-flex">
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="hidden sm:inline-flex"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <Link to="/login">
+                  <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                    Sign In
+                  </Button>
+                </Link>
+              )}
+            </>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -102,7 +169,10 @@ export function Header() {
               { label: "Home", to: "/" as const },
               { label: "Products", to: "/products" as const },
               { label: "Deals", to: "/deals" as const },
-              { label: "Profile", to: "/profile" as const },
+              ...(session
+                ? [{ label: "Profile", to: "/profile" as const }]
+                : [{ label: "Sign In", to: "/login" as const }]),
+              { label: "Wishlist", to: "/wishlist" as const },
               { label: "Checkout", to: "/checkout" as const },
             ].map((item) => (
               <Link
@@ -114,6 +184,18 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
+            {session && (
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setMobileOpen(false);
+                }}
+                className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </button>
+            )}
           </nav>
         </div>
       )}

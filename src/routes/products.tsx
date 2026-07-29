@@ -8,10 +8,18 @@ import type { Product } from "@/components/ProductCard";
 import { getProducts } from "@/lib/server/products";
 import { toCardProducts } from "@/lib/mappers";
 import { SkeletonGrid } from "@/components/PageSkeleton";
+import { z } from "zod";
+
+const productSearchSchema = z.object({
+  search: z.string().optional(),
+});
 
 export const Route = createFileRoute("/products")({
-  loader: async () => ({
+  validateSearch: productSearchSchema,
+  loaderDeps: ({ search }) => ({ search: search.search }),
+  loader: async ({ deps }) => ({
     products: toCardProducts(await getProducts()),
+    search: deps.search,
   }),
   pendingComponent: SkeletonGrid,
   head: () => ({
@@ -37,15 +45,20 @@ const sortOptions = [
 ];
 
 function ProductsPage() {
-  const { products: allProducts } = Route.useLoaderData();
+  const { products: allProducts, search: searchQuery } = Route.useLoaderData();
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [sortBy, setSortBy] = useState("Best Selling");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const filtered = useMemo(
-    () => allProducts.filter((p: Product) => selectedBrand === "All" || p.brand === selectedBrand),
-    [allProducts, selectedBrand],
-  );
+  const filtered = useMemo(() => {
+    const q = searchQuery?.toLowerCase();
+    return allProducts.filter((p: Product) => {
+      if (selectedBrand !== "All" && p.brand !== selectedBrand) return false;
+      if (q && !p.name.toLowerCase().includes(q) && !p.brand.toLowerCase().includes(q))
+        return false;
+      return true;
+    });
+  }, [allProducts, selectedBrand, searchQuery]);
 
   const sorted = useMemo(
     () =>
@@ -62,7 +75,9 @@ function ProductsPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="font-display text-3xl font-bold text-foreground">All Products</h1>
+        <h1 className="font-display text-3xl font-bold text-foreground">
+          {searchQuery ? <>Search: &ldquo;{searchQuery}&rdquo;</> : "All Products"}
+        </h1>
         <p className="mt-2 text-muted-foreground">{sorted.length} products found</p>
       </div>
 

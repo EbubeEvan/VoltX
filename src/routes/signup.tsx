@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import { UserPlus, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
+import { UserPlus, Mail, Lock, User, Eye, EyeOff, AlertCircle } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,25 +50,37 @@ function SignupPage() {
   const { redirect: redirectTo } = Route.useSearch();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [generalError, setGeneralError] = useState("");
 
   const form = useForm<z.infer<typeof signupSchema>>({
     resolver: zodResolver(signupSchema),
     defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   });
 
+  function clearError() {
+    if (generalError) setGeneralError("");
+  }
+
   async function onSubmit(values: z.infer<typeof signupSchema>) {
     setLoading(true);
-    const { error } = await authClient.signUp.email({
-      name: values.name,
-      email: values.email,
-      password: values.password,
-    });
-    setLoading(false);
-    if (error) {
-      form.setError("email", { message: error.message || "Registration failed" });
-      return;
+    try {
+      const { error } = await authClient.signUp.email({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      });
+      if (error) {
+        setGeneralError(error.message || "Registration failed. Please try again.");
+        return;
+      }
+      setGeneralError("");
+      navigate({ to: redirectTo || "/" });
+    } catch (err) {
+      console.error("Sign up error:", err);
+      setGeneralError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    navigate({ to: redirectTo || "/" });
   }
 
   return (
@@ -91,7 +103,15 @@ function SignupPage() {
                       <FormControl>
                         <div className="relative">
                           <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                          <Input placeholder="John Doe" className="pl-10" {...field} />
+                          <Input
+                            placeholder="John Doe"
+                            className="pl-10"
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              clearError();
+                            }}
+                          />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -107,7 +127,15 @@ function SignupPage() {
                       <FormControl>
                         <div className="relative">
                           <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                          <Input placeholder="you@example.com" className="pl-10" {...field} />
+                          <Input
+                            placeholder="you@example.com"
+                            className="pl-10"
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              clearError();
+                            }}
+                          />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -128,6 +156,10 @@ function SignupPage() {
                             placeholder="Min. 8 characters"
                             className="pl-10"
                             {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              clearError();
+                            }}
                           />
                           <button
                             type="button"
@@ -160,6 +192,10 @@ function SignupPage() {
                             placeholder="Repeat your password"
                             className="pl-10"
                             {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              clearError();
+                            }}
                           />
                         </div>
                       </FormControl>
@@ -167,6 +203,12 @@ function SignupPage() {
                     </FormItem>
                   )}
                 />
+                {generalError && (
+                  <div className="flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                    <span>{generalError}</span>
+                  </div>
+                )}
                 <Button
                   type="submit"
                   variant="hero"
@@ -174,7 +216,7 @@ function SignupPage() {
                   className="w-full"
                   disabled={loading}
                 >
-                  <UserPlus className="mr-2 h-4 w-4" />
+                  <UserPlus className="h-4 w-4" />
                   {loading ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
@@ -190,12 +232,24 @@ function SignupPage() {
             </div>
 
             <Button
+              type="button"
               variant="outline"
               size="xl"
               className="w-full"
-              onClick={() => authClient.signIn.social({ provider: "google" })}
+              onClick={async () => {
+                try {
+                  const { error } = await authClient.signIn.social({ provider: "google" });
+                  if (error) {
+                    console.error("Google sign-up error:", error);
+                    setGeneralError(error.message || "Google sign-up failed. Please try again.");
+                  }
+                } catch (err) {
+                  console.error("Google sign-up exception:", err);
+                  setGeneralError("Google sign-up failed. Please try again.");
+                }
+              }}
             >
-              <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+              <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
                   fill="#4285F4"
