@@ -1,8 +1,8 @@
 import { ProductCard } from "@/components/ProductCard";
-import { featuredProducts } from "@/data/products";
+import type { Product } from "@/components/ProductCard";
 import { Sparkles } from "lucide-react";
 
-export function FeaturedProducts() {
+export function FeaturedProducts({ products }: { products: Product[] }) {
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 lg:px-8">
       <div className="mb-8 flex items-center gap-3">
@@ -16,7 +16,7 @@ export function FeaturedProducts() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {featuredProducts.map((product, i) => (
+        {products.map((product, i) => (
           <ProductCard key={product.id} product={product} index={i} />
         ))}
       </div>

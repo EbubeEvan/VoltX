@@ -1,12 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { SlidersHorizontal, ChevronDown, Grid3X3, LayoutList } from "lucide-react";
+import { SlidersHorizontal, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
-import { allProducts } from "@/data/products";
+import type { Product } from "@/components/ProductCard";
+import { getProducts } from "@/lib/server/products";
+import { toCardProducts } from "@/lib/mappers";
+import { SkeletonGrid } from "@/components/PageSkeleton";
 
 export const Route = createFileRoute("/products")({
+  loader: async () => ({
+    products: toCardProducts(await getProducts()),
+  }),
+  pendingComponent: SkeletonGrid,
   head: () => ({
     meta: [
       { title: "All Products — VoltX Electronics" },
@@ -30,18 +37,26 @@ const sortOptions = [
 ];
 
 function ProductsPage() {
+  const { products: allProducts } = Route.useLoaderData();
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [sortBy, setSortBy] = useState("Best Selling");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const filtered = allProducts.filter((p) => selectedBrand === "All" || p.brand === selectedBrand);
+  const filtered = useMemo(
+    () => allProducts.filter((p: Product) => selectedBrand === "All" || p.brand === selectedBrand),
+    [allProducts, selectedBrand],
+  );
 
-  const sorted = [...filtered].sort((a, b) => {
-    if (sortBy === "Price: Low to High") return a.price - b.price;
-    if (sortBy === "Price: High to Low") return b.price - a.price;
-    if (sortBy === "Top Rated") return b.rating - a.rating;
-    return 0;
-  });
+  const sorted = useMemo(
+    () =>
+      [...filtered].sort((a: Product, b: Product) => {
+        if (sortBy === "Price: Low to High") return a.price - b.price;
+        if (sortBy === "Price: High to Low") return b.price - a.price;
+        if (sortBy === "Top Rated") return b.rating - a.rating;
+        return 0;
+      }),
+    [filtered, sortBy],
+  );
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">

@@ -1,7 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { FlashDeals } from "@/components/FlashDeals";
+import { getFlashDeals } from "@/lib/server/products";
+import { toCardProducts } from "@/lib/mappers";
+import { SkeletonGrid } from "@/components/PageSkeleton";
 
 export const Route = createFileRoute("/deals")({
+  loader: async () => {
+    const deals = await getFlashDeals();
+    return { deals: toCardProducts(deals) };
+  },
+  pendingComponent: SkeletonGrid,
   head: () => ({
     meta: [
       { title: "Hot Deals — VoltX Electronics" },
@@ -16,6 +24,7 @@ export const Route = createFileRoute("/deals")({
 });
 
 function DealsPage() {
+  const { deals } = Route.useLoaderData();
   return (
     <div className="py-8">
       <div className="mx-auto max-w-7xl px-4 lg:px-8">
@@ -24,7 +33,7 @@ function DealsPage() {
           Don't miss these limited-time offers on premium electronics
         </p>
       </div>
-      <FlashDeals />
+      <FlashDeals products={deals} />
     </div>
   );
 }

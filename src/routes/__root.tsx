@@ -103,6 +103,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="en" className="dark">
       <head>
         <HeadContent />
+        <script src="https://js.paystack.co/v1/inline.js" />
       </head>
       <body>
         {children}

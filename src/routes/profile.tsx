@@ -1,12 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { User, Package, Heart, Settings, LogOut, MapPin, CreditCard, Bell } from "lucide-react";
+import { User, Package, Heart, Settings, MapPin, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useWishlist } from "@/context/WishlistContext";
-import { allProducts } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
+import { toCardProducts } from "@/lib/mappers";
+import { getProfileData } from "@/lib/server/profile";
+import { SkeletonProfile } from "@/components/PageSkeleton";
 
 export const Route = createFileRoute("/profile")({
+  loader: async () => {
+    const data = await getProfileData();
+    return {
+      session: data.session,
+      orders: data.orders,
+      allProducts: toCardProducts(data.allProducts),
+    };
+  },
+  pendingComponent: SkeletonProfile,
   head: () => ({
     meta: [
       { title: "My Profile — VoltX" },
@@ -16,13 +27,10 @@ export const Route = createFileRoute("/profile")({
   component: ProfilePage,
 });
 
-const mockOrders = [
-  { id: "ORD-2026-001", date: "Apr 28, 2026", total: 1498, status: "Delivered", items: 2 },
-  { id: "ORD-2026-002", date: "May 2, 2026", total: 298, status: "Shipped", items: 1 },
-];
-
 function ProfilePage() {
+  const { session, orders, allProducts } = Route.useLoaderData();
   const { wishlist } = useWishlist();
+  const user = session?.user;
   const wishlisted = allProducts.filter((p) => wishlist.has(p.id));
 
   return (
@@ -34,27 +42,32 @@ function ProfilePage() {
         className="glass-card flex flex-wrap items-center gap-6 p-6"
       >
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20">
-          <User className="h-10 w-10 text-primary" />
+          {user?.image ? (
+            <img src={user.image} alt="" className="h-20 w-20 rounded-full object-cover" />
+          ) : (
+            <User className="h-10 w-10 text-primary" />
+          )}
         </div>
         <div className="flex-1">
-          <h1 className="font-display text-2xl font-bold text-foreground">Alex Johnson</h1>
-          <p className="text-sm text-muted-foreground">alex.johnson@email.com</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Member since January 2025 • VoltX Gold Member
-          </p>
+          <h1 className="font-display text-2xl font-bold text-foreground">
+            {user?.name || "Guest"}
+          </h1>
+          <p className="text-sm text-muted-foreground">{user?.email || ""}</p>
         </div>
-        <Button variant="glass" size="sm">
-          <Settings className="mr-1.5 h-3.5 w-3.5" /> Edit Profile
-        </Button>
+        {user && (
+          <Button variant="glass" size="sm">
+            <Settings className="mr-1.5 h-3.5 w-3.5" /> Edit Profile
+          </Button>
+        )}
       </motion.div>
 
       {/* Quick Stats */}
       <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
-          { icon: Package, label: "Orders", value: "12" },
+          { icon: Package, label: "Orders", value: String(orders.length) },
           { icon: Heart, label: "Wishlist", value: String(wishlist.size) },
-          { icon: MapPin, label: "Addresses", value: "2" },
-          { icon: CreditCard, label: "Cards", value: "3" },
+          { icon: MapPin, label: "Addresses", value: "0" },
+          { icon: CreditCard, label: "Cards", value: "0" },
         ].map(({ icon: Icon, label, value }, i) => (
           <motion.div
             key={label}
@@ -73,31 +86,47 @@ function ProfilePage() {
       {/* Recent Orders */}
       <section className="mt-10">
         <h2 className="section-heading mb-4 text-xl text-foreground">Recent Orders</h2>
-        <div className="space-y-3">
-          {mockOrders.map((order) => (
-            <div
-              key={order.id}
-              className="glass-card flex flex-wrap items-center justify-between gap-4 p-4"
-            >
-              <div>
-                <p className="font-semibold text-foreground">{order.id}</p>
-                <p className="text-xs text-muted-foreground">
-                  {order.date} • {order.items} items
-                </p>
+        {orders.length === 0 ? (
+          <div className="glass-card p-8 text-center">
+            <Package className="mx-auto h-10 w-10 text-muted-foreground" />
+            <p className="mt-3 text-muted-foreground">No orders yet.</p>
+            <Link to="/products">
+              <Button variant="glass" size="sm" className="mt-4">
+                Start Shopping
+              </Button>
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {orders.map((order) => (
+              <div
+                key={order.id}
+                className="glass-card flex flex-wrap items-center justify-between gap-4 p-4"
+              >
+                <div>
+                  <p className="font-semibold text-foreground">#{order.id}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(order.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="font-display font-bold text-foreground">
+                    ₦{(order.total / 100).toLocaleString()}
+                  </p>
+                  <span
+                    className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${order.status === "delivered" ? "bg-success/20 text-success" : "bg-primary/20 text-primary"}`}
+                  >
+                    {order.status}
+                  </span>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="font-display font-bold text-foreground">
-                  ${order.total.toLocaleString()}
-                </p>
-                <span
-                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${order.status === "Delivered" ? "bg-success/20 text-success" : "bg-primary/20 text-primary"}`}
-                >
-                  {order.status}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Wishlist */}

@@ -1,10 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Trash2, Minus, Plus, ShoppingBag, CreditCard, Lock } from "lucide-react";
+import { Trash2, Minus, Plus, ShoppingBag, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/CartContext";
+import { getCheckoutSession } from "@/lib/server/profile";
+import { SkeletonCheckout } from "@/components/PageSkeleton";
 
 export const Route = createFileRoute("/checkout")({
+  loader: async () => {
+    const user = await getCheckoutSession();
+    if (!user) {
+      throw redirect({ to: "/login", search: { redirect: "/checkout" } });
+    }
+    return { user };
+  },
+  pendingComponent: SkeletonCheckout,
   head: () => ({
     meta: [
       { title: "Checkout — VoltX" },
@@ -15,6 +25,7 @@ export const Route = createFileRoute("/checkout")({
 });
 
 function CheckoutPage() {
+  const { user } = Route.useLoaderData();
   const { items, updateQuantity, removeItem, totalPrice, totalItems, clearCart } = useCart();
 
   if (items.length === 0) {
@@ -36,9 +47,37 @@ function CheckoutPage() {
     );
   }
 
-  const shipping = totalPrice >= 99 ? 0 : 9.99;
-  const tax = totalPrice * 0.08;
+  const shippingThreshold = 99000;
+  const shipping = totalPrice >= shippingThreshold ? 0 : 5000;
+  const taxRate = 0.075;
+  const tax = Math.round(totalPrice * taxRate);
   const orderTotal = totalPrice + shipping + tax;
+
+  const handlePaystack = () => {
+    const paystackKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY;
+    if (!paystackKey) {
+      alert("Paystack is not configured. Set VITE_PAYSTACK_PUBLIC_KEY in your environment.");
+      return;
+    }
+
+    const ref = `VOLT-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+    type PaystackPopWindow = {
+      PaystackPop: { setup: (opts: Record<string, unknown>) => { openIframe: () => void } };
+    };
+    const handler = (window as unknown as PaystackPopWindow).PaystackPop?.setup({
+      key: paystackKey,
+      email: user?.email || "guest@example.com",
+      amount: orderTotal,
+      currency: "NGN",
+      ref,
+      onClose: () => {},
+      callback: async () => {
+        clearCart();
+      },
+    });
+    handler?.openIframe();
+  };
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8">
@@ -98,7 +137,7 @@ function CheckoutPage() {
                   </div>
                   <div className="flex items-center gap-4">
                     <span className="font-display font-bold text-foreground">
-                      ${(product.price * quantity).toLocaleString()}
+                      ₦{(product.price * quantity).toLocaleString()}
                     </span>
                     <button
                       onClick={() => removeItem(product.id)}
@@ -119,43 +158,38 @@ function CheckoutPage() {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Subtotal</span>
-              <span className="text-foreground">
-                ${totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-              </span>
+              <span className="text-foreground">₦{totalPrice.toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Shipping</span>
               <span className={shipping === 0 ? "text-success font-medium" : "text-foreground"}>
-                {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+                {shipping === 0 ? "FREE" : `₦${shipping.toLocaleString()}`}
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Estimated Tax</span>
-              <span className="text-foreground">${tax.toFixed(2)}</span>
+              <span className="text-foreground">₦{tax.toLocaleString()}</span>
             </div>
           </div>
           <div className="border-t border-border/50 pt-4">
             <div className="flex justify-between">
               <span className="font-display text-lg font-bold text-foreground">Total</span>
               <span className="font-display text-xl font-bold text-foreground">
-                ${orderTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                ₦{orderTotal.toLocaleString()}
               </span>
             </div>
           </div>
-          <Button
-            variant="hero"
-            size="xl"
-            className="w-full"
-            onClick={() => {
-              clearCart();
-              alert("Order placed! (Demo)");
-            }}
-          >
-            <Lock className="mr-2 h-4 w-4" /> Place Order
+          <Button variant="hero" size="xl" className="w-full" onClick={handlePaystack}>
+            <Lock className="mr-2 h-4 w-4" /> Pay with Paystack
           </Button>
+          {!user && (
+            <p className="text-center text-xs text-muted-foreground">
+              You'll be able to log in or continue as guest
+            </p>
+          )}
           <p className="text-center text-xs text-muted-foreground">
             <Lock className="mr-1 inline h-3 w-3" />
-            Secure checkout powered by VoltX
+            Secured by Paystack
           </p>
         </div>
       </div>

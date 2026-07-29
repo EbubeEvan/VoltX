@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Timer, Zap } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
-import { flashDeals } from "@/data/products";
+import type { Product } from "@/components/ProductCard";
 
 function CountdownTimer() {
   const [time, setTime] = useState({ hours: 5, minutes: 42, seconds: 18 });
@@ -54,7 +54,7 @@ function CountdownTimer() {
   );
 }
 
-export function FlashDeals() {
+export function FlashDeals({ products }: { products: Product[] }) {
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 lg:px-8">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
@@ -75,7 +75,7 @@ export function FlashDeals() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {flashDeals.map((product, i) => (
+        {products.map((product, i) => (
           <ProductCard key={product.id} product={product} index={i} />
         ))}
       </div>

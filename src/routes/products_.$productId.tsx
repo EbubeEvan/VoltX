@@ -19,15 +19,26 @@ import {
   Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getProductDetail, featuredProducts } from "@/data/products";
-import type { ReviewData } from "@/data/products";
+import { getProductById, getFeaturedProducts } from "@/lib/server/products";
+import { toCardProducts } from "@/lib/mappers";
 import { ProductCard } from "@/components/ProductCard";
+import type { Product as CardProduct } from "@/components/ProductCard";
+import type { CustomerReview } from "@/lib/db/schema";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
+import { SkeletonDetail } from "@/components/PageSkeleton";
 
 export const Route = createFileRoute("/products_/$productId")({
-  head: ({ params }) => {
-    const product = getProductDetail(params.productId);
+  loader: async ({ params }) => {
+    const [product, featured] = await Promise.all([
+      getProductById({ data: Number(params.productId) }),
+      getFeaturedProducts(),
+    ]);
+    return { product, related: toCardProducts(featured) };
+  },
+  pendingComponent: SkeletonDetail,
+  head: ({ loaderData }) => {
+    const product = loaderData?.product;
     return {
       meta: [
         { title: product ? `${product.name} — VoltX` : "Product — VoltX" },
@@ -49,14 +60,22 @@ export const Route = createFileRoute("/products_/$productId")({
 });
 
 function ProductDetailPage() {
-  const { productId } = Route.useParams();
-  const product = getProductDetail(productId);
+  const { product: raw, related } = Route.useLoaderData();
+  const product = raw
+    ? {
+        ...raw,
+        images: (raw.images ?? []) as string[],
+        specs: (raw.specs ?? {}) as Record<string, string>,
+        highlights: (raw.highlights ?? []) as string[],
+        customerReviews: (raw.customerReviews ?? []) as CustomerReview[],
+        ratingBreakdown: (raw.ratingBreakdown ?? {}) as Record<number, number>,
+      }
+    : null;
   const { addItem } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<"description" | "specs" | "reviews">("description");
-  const [selectedColor, setSelectedColor] = useState(0);
   const [selectedStorage, setSelectedStorage] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
@@ -74,13 +93,31 @@ function ProductDetailPage() {
     );
   }
 
+  const displayPrice = product.price / 100;
+  const displayOriginalPrice = product.originalPrice ? product.originalPrice / 100 : undefined;
+  const productRating = product.rating ?? 0;
+  const productReviews = product.reviews ?? 0;
+
   const discount = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
     : 0;
-  const liked = isWishlisted(product.id);
+  const liked = isWishlisted(String(product.id));
+
+  const cartProduct: CardProduct = {
+    id: String(product.id),
+    name: product.name,
+    brand: product.brand,
+    price: displayPrice,
+    originalPrice: displayOriginalPrice,
+    image: product.image,
+    rating: product.rating ?? 0,
+    reviews: product.reviews ?? 0,
+    badge: product.badge ?? undefined,
+    inStock: product.inStock ?? true,
+  };
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) addItem(product);
+    for (let i = 0; i < quantity; i++) addItem(cartProduct);
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2000);
   };
@@ -88,14 +125,14 @@ function ProductDetailPage() {
   const handleShare = async () => {
     const url = window.location.href;
     if (navigator.share) {
-      await navigator.share({ title: product.name, text: product.description, url });
+      await navigator.share({ title: product.name, text: product.description || "", url });
     } else {
       await navigator.clipboard.writeText(url);
     }
   };
 
-  const reviews = product.customerReviews || [];
-  const ratingBreakdown = product.ratingBreakdown || {};
+  const reviews = product.customerReviews;
+  const ratingBreakdown = product.ratingBreakdown;
   const visibleReviews = showAllReviews ? reviews : reviews.slice(0, 2);
 
   return (
@@ -180,12 +217,12 @@ function ProductDetailPage() {
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-4 w-4 ${i < Math.floor(product.rating) ? "fill-warning text-warning" : "text-muted"}`}
+                  className={`h-4 w-4 ${i < Math.floor(productRating) ? "fill-warning text-warning" : "text-muted"}`}
                 />
               ))}
             </div>
             <span className="text-sm text-muted-foreground">
-              {product.rating} ({product.reviews.toLocaleString()} reviews)
+              {productRating} ({productReviews.toLocaleString()} reviews)
             </span>
             <button
               onClick={() => setActiveTab("reviews")}
@@ -198,15 +235,15 @@ function ProductDetailPage() {
           {/* Price */}
           <div className="flex items-baseline gap-3">
             <span className="font-display text-4xl font-bold text-foreground">
-              ${product.price.toLocaleString()}
+              ₦{displayPrice.toLocaleString()}
             </span>
-            {product.originalPrice && (
+            {displayOriginalPrice && (
               <>
                 <span className="text-xl text-muted-foreground line-through">
-                  ${product.originalPrice.toLocaleString()}
+                  ₦{displayOriginalPrice.toLocaleString()}
                 </span>
                 <span className="rounded-md bg-sale px-2 py-0.5 text-sm font-bold text-primary-foreground">
-                  Save ${(product.originalPrice - product.price).toLocaleString()}
+                  Save ₦{(displayOriginalPrice - displayPrice).toLocaleString()}
                 </span>
               </>
             )}
@@ -234,36 +271,6 @@ function ProductDetailPage() {
                   </li>
                 ))}
               </ul>
-            </div>
-          )}
-
-          {/* Color Picker */}
-          {product.colors && product.colors.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-semibold text-foreground">
-                Color:{" "}
-                <span className="font-normal text-muted-foreground">
-                  {product.colors[selectedColor].name}
-                </span>
-              </h3>
-              <div className="flex gap-3">
-                {product.colors.map((color, i) => (
-                  <button
-                    key={color.name}
-                    onClick={() => setSelectedColor(i)}
-                    className={`relative h-10 w-10 rounded-full border-2 transition-all ${selectedColor === i ? "border-primary scale-110" : "border-border/50 hover:border-muted-foreground"}`}
-                    title={color.name}
-                  >
-                    <span
-                      className="absolute inset-1 rounded-full"
-                      style={{ backgroundColor: color.hex }}
-                    />
-                    {selectedColor === i && (
-                      <Check className="absolute inset-0 m-auto h-4 w-4 text-primary-foreground drop-shadow-md" />
-                    )}
-                  </button>
-                ))}
-              </div>
             </div>
           )}
 
@@ -323,7 +330,7 @@ function ProductDetailPage() {
               variant="glass"
               size="icon"
               className={`h-12 w-12 ${liked ? "text-sale" : ""}`}
-              onClick={() => toggleWishlist(product.id)}
+              onClick={() => toggleWishlist(String(product.id))}
             >
               <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
             </Button>
@@ -335,7 +342,7 @@ function ProductDetailPage() {
           {/* Trust badges */}
           <div className="grid grid-cols-3 gap-4 border-t border-border/50 pt-6">
             {[
-              { icon: Truck, label: "Free Shipping", sub: "Orders $99+" },
+              { icon: Truck, label: "Free Shipping", sub: "Orders ₦99,000+" },
               { icon: Shield, label: "2-Year Warranty", sub: "Full coverage" },
               { icon: RotateCcw, label: "30-Day Returns", sub: "No hassle" },
             ].map(({ icon: Icon, label, sub }) => (
@@ -358,7 +365,7 @@ function ProductDetailPage() {
               onClick={() => setActiveTab(tab)}
               className={`relative px-6 py-3 text-sm font-medium capitalize transition-colors ${activeTab === tab ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
             >
-              {tab === "reviews" ? `Reviews (${product.reviews.toLocaleString()})` : tab}
+              {tab === "reviews" ? `Reviews (${productReviews.toLocaleString()})` : tab}
               {activeTab === tab && (
                 <motion.div
                   layoutId="tab-indicator"
@@ -454,18 +461,18 @@ function ProductDetailPage() {
                 <div className="glass-card grid gap-8 p-6 sm:grid-cols-2">
                   <div className="text-center">
                     <div className="font-display text-6xl font-bold text-foreground">
-                      {product.rating}
+                      {productRating}
                     </div>
                     <div className="mt-2 flex items-center justify-center gap-0.5">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star
                           key={i}
-                          className={`h-5 w-5 ${i < Math.floor(product.rating) ? "fill-warning text-warning" : "text-muted"}`}
+                          className={`h-5 w-5 ${i < Math.floor(productRating) ? "fill-warning text-warning" : "text-muted"}`}
                         />
                       ))}
                     </div>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Based on {product.reviews.toLocaleString()} reviews
+                      Based on {productReviews.toLocaleString()} reviews
                     </p>
                   </div>
                   <div className="space-y-2">
@@ -521,8 +528,8 @@ function ProductDetailPage() {
       <section className="mt-16">
         <h2 className="section-heading mb-8 text-2xl text-foreground">You May Also Like</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredProducts
-            .filter((p) => p.id !== product.id)
+          {related
+            .filter((p) => p.id !== String(product.id))
             .slice(0, 4)
             .map((p, i) => (
               <ProductCard key={p.id} product={p} index={i} />
@@ -533,7 +540,7 @@ function ProductDetailPage() {
   );
 }
 
-function ReviewCard({ review }: { review: ReviewData }) {
+function ReviewCard({ review }: { review: CustomerReview }) {
   const [helpful, setHelpful] = useState(false);
 
   return (
