@@ -5,7 +5,11 @@ export const Route = createFileRoute("/deals")({
   head: () => ({
     meta: [
       { title: "Hot Deals — VoltX Electronics" },
-      { name: "description", content: "Limited-time flash deals on premium electronics. Don't miss these exclusive offers." },
+      {
+        name: "description",
+        content:
+          "Limited-time flash deals on premium electronics. Don't miss these exclusive offers.",
+      },
     ],
   }),
   component: DealsPage,

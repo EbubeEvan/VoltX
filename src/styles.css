@@ -1,4 +1,4 @@
-@import "tailwindcss" source(none);
+@import "tailwindcss";
 @source "../src";
 @import "tw-animate-css";
 
@@ -60,18 +60,18 @@
 }
 
 @font-face {
-  font-family: 'Space Grotesk';
+  font-family: "Space Grotesk";
   font-style: normal;
   font-weight: 300 700;
   font-display: swap;
-  src: url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+  src: url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap");
 }
 
 :root {
   --radius: 0.75rem;
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
-  
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
   /* Midnight blue dark theme as default */
   --background: oklch(0.13 0.03 250);
   --foreground: oklch(0.97 0.005 250);
@@ -140,7 +140,12 @@
     font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
   }
 }
@@ -160,7 +165,9 @@
   }
 
   .neon-glow:hover {
-    box-shadow: 0 0 30px oklch(0.75 0.15 195 / 50%), 0 0 60px oklch(0.75 0.15 195 / 20%);
+    box-shadow:
+      0 0 30px oklch(0.75 0.15 195 / 50%),
+      0 0 60px oklch(0.75 0.15 195 / 20%);
   }
 
   .gradient-text {

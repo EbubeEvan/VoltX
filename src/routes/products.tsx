@@ -10,24 +10,31 @@ export const Route = createFileRoute("/products")({
   head: () => ({
     meta: [
       { title: "All Products — VoltX Electronics" },
-      { name: "description", content: "Browse our full catalog of smartphones, laptops, TVs, audio equipment, and gaming accessories." },
+      {
+        name: "description",
+        content:
+          "Browse our full catalog of smartphones, laptops, TVs, audio equipment, and gaming accessories.",
+      },
     ],
   }),
   component: ProductsPage,
 });
 
-
 const brands = ["All", "Apple", "Samsung", "Sony", "LG", "Razer", "Bose", "DJI"];
-const sortOptions = ["Best Selling", "Price: Low to High", "Price: High to Low", "Newest", "Top Rated"];
+const sortOptions = [
+  "Best Selling",
+  "Price: Low to High",
+  "Price: High to Low",
+  "Newest",
+  "Top Rated",
+];
 
 function ProductsPage() {
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [sortBy, setSortBy] = useState("Best Selling");
   const [filtersOpen, setFiltersOpen] = useState(false);
 
-  const filtered = allProducts.filter(
-    (p) => selectedBrand === "All" || p.brand === selectedBrand
-  );
+  const filtered = allProducts.filter((p) => selectedBrand === "All" || p.brand === selectedBrand);
 
   const sorted = [...filtered].sort((a, b) => {
     if (sortBy === "Price: Low to High") return a.price - b.price;
@@ -47,11 +54,7 @@ function ProductsPage() {
       {/* Toolbar */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <Button
-            variant="glass"
-            size="sm"
-            onClick={() => setFiltersOpen(!filtersOpen)}
-          >
+          <Button variant="glass" size="sm" onClick={() => setFiltersOpen(!filtersOpen)}>
             <SlidersHorizontal className="mr-1.5 h-3.5 w-3.5" />
             Filters
           </Button>
@@ -81,7 +84,9 @@ function ProductsPage() {
             className="h-9 appearance-none rounded-lg border border-input bg-secondary px-3 pr-8 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
           >
             {sortOptions.map((opt) => (
-              <option key={opt} value={opt}>{opt}</option>
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
             ))}
           </select>
           <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

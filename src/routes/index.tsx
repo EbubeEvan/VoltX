@@ -11,9 +11,17 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "VoltX — Next-Gen Electronics, Delivered" },
-      { name: "description", content: "Premium smartphones, laptops, TVs, audio gear and gaming accessories at unbeatable prices. Free shipping on orders over $99." },
+      {
+        name: "description",
+        content:
+          "Premium smartphones, laptops, TVs, audio gear and gaming accessories at unbeatable prices. Free shipping on orders over $99.",
+      },
       { property: "og:title", content: "VoltX — Next-Gen Electronics, Delivered" },
-      { property: "og:description", content: "Premium smartphones, laptops, TVs, audio gear and gaming accessories at unbeatable prices." },
+      {
+        property: "og:description",
+        content:
+          "Premium smartphones, laptops, TVs, audio gear and gaming accessories at unbeatable prices.",
+      },
     ],
   }),
   component: Index,

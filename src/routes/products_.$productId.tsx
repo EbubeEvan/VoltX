@@ -2,8 +2,21 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Heart, ShoppingCart, Star, Minus, Plus, Shield, Truck, RotateCcw,
-  Share2, Check, ThumbsUp, ChevronDown, ChevronUp, Zap, Package,
+  Heart,
+  ShoppingCart,
+  Star,
+  Minus,
+  Plus,
+  Shield,
+  Truck,
+  RotateCcw,
+  Share2,
+  Check,
+  ThumbsUp,
+  ChevronDown,
+  ChevronUp,
+  Zap,
+  Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getProductDetail, featuredProducts } from "@/data/products";
@@ -27,7 +40,9 @@ export const Route = createFileRoute("/products_/$productId")({
     <div className="flex min-h-[60vh] items-center justify-center">
       <div className="text-center">
         <h1 className="font-display text-4xl font-bold text-foreground">Product Not Found</h1>
-        <Link to="/products" className="mt-4 inline-block text-primary hover:underline">Browse all products</Link>
+        <Link to="/products" className="mt-4 inline-block text-primary hover:underline">
+          Browse all products
+        </Link>
       </div>
     </div>
   ),
@@ -51,7 +66,9 @@ function ProductDetailPage() {
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
           <h1 className="font-display text-4xl font-bold text-foreground">Product Not Found</h1>
-          <Link to="/products" className="mt-4 inline-block text-primary hover:underline">Browse all products</Link>
+          <Link to="/products" className="mt-4 inline-block text-primary hover:underline">
+            Browse all products
+          </Link>
         </div>
       </div>
     );
@@ -85,16 +102,24 @@ function ProductDetailPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
       {/* Breadcrumb */}
       <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-        <Link to="/" className="hover:text-primary transition-colors">Home</Link>
+        <Link to="/" className="hover:text-primary transition-colors">
+          Home
+        </Link>
         <span>/</span>
-        <Link to="/products" className="hover:text-primary transition-colors">Products</Link>
+        <Link to="/products" className="hover:text-primary transition-colors">
+          Products
+        </Link>
         <span>/</span>
         <span className="text-foreground">{product.name}</span>
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2">
         {/* Image Gallery */}
-        <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="space-y-4"
+        >
           <div className="glass-card relative aspect-square overflow-hidden p-8">
             {product.badge && (
               <div className="absolute left-4 top-4 z-10 rounded-md bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">
@@ -135,30 +160,54 @@ function ProductDetailPage() {
         </motion.div>
 
         {/* Product Info */}
-        <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="space-y-6"
+        >
           <div>
-            <p className="text-sm font-medium uppercase tracking-wider text-primary">{product.brand}</p>
-            <h1 className="mt-2 font-display text-3xl font-bold text-foreground lg:text-4xl">{product.name}</h1>
+            <p className="text-sm font-medium uppercase tracking-wider text-primary">
+              {product.brand}
+            </p>
+            <h1 className="mt-2 font-display text-3xl font-bold text-foreground lg:text-4xl">
+              {product.name}
+            </h1>
           </div>
 
           {/* Rating */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-0.5">
               {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className={`h-4 w-4 ${i < Math.floor(product.rating) ? "fill-warning text-warning" : "text-muted"}`} />
+                <Star
+                  key={i}
+                  className={`h-4 w-4 ${i < Math.floor(product.rating) ? "fill-warning text-warning" : "text-muted"}`}
+                />
               ))}
             </div>
-            <span className="text-sm text-muted-foreground">{product.rating} ({product.reviews.toLocaleString()} reviews)</span>
-            <button onClick={() => setActiveTab("reviews")} className="text-sm text-primary hover:underline">Read reviews</button>
+            <span className="text-sm text-muted-foreground">
+              {product.rating} ({product.reviews.toLocaleString()} reviews)
+            </span>
+            <button
+              onClick={() => setActiveTab("reviews")}
+              className="text-sm text-primary hover:underline"
+            >
+              Read reviews
+            </button>
           </div>
 
           {/* Price */}
           <div className="flex items-baseline gap-3">
-            <span className="font-display text-4xl font-bold text-foreground">${product.price.toLocaleString()}</span>
+            <span className="font-display text-4xl font-bold text-foreground">
+              ${product.price.toLocaleString()}
+            </span>
             {product.originalPrice && (
               <>
-                <span className="text-xl text-muted-foreground line-through">${product.originalPrice.toLocaleString()}</span>
-                <span className="rounded-md bg-sale px-2 py-0.5 text-sm font-bold text-primary-foreground">Save ${(product.originalPrice - product.price).toLocaleString()}</span>
+                <span className="text-xl text-muted-foreground line-through">
+                  ${product.originalPrice.toLocaleString()}
+                </span>
+                <span className="rounded-md bg-sale px-2 py-0.5 text-sm font-bold text-primary-foreground">
+                  Save ${(product.originalPrice - product.price).toLocaleString()}
+                </span>
               </>
             )}
           </div>
@@ -192,7 +241,10 @@ function ProductDetailPage() {
           {product.colors && product.colors.length > 0 && (
             <div className="space-y-3">
               <h3 className="text-sm font-semibold text-foreground">
-                Color: <span className="font-normal text-muted-foreground">{product.colors[selectedColor].name}</span>
+                Color:{" "}
+                <span className="font-normal text-muted-foreground">
+                  {product.colors[selectedColor].name}
+                </span>
               </h3>
               <div className="flex gap-3">
                 {product.colors.map((color, i) => (
@@ -202,7 +254,10 @@ function ProductDetailPage() {
                     className={`relative h-10 w-10 rounded-full border-2 transition-all ${selectedColor === i ? "border-primary scale-110" : "border-border/50 hover:border-muted-foreground"}`}
                     title={color.name}
                   >
-                    <span className="absolute inset-1 rounded-full" style={{ backgroundColor: color.hex }} />
+                    <span
+                      className="absolute inset-1 rounded-full"
+                      style={{ backgroundColor: color.hex }}
+                    />
                     {selectedColor === i && (
                       <Check className="absolute inset-0 m-auto h-4 w-4 text-primary-foreground drop-shadow-md" />
                     )}
@@ -233,19 +288,35 @@ function ProductDetailPage() {
           {/* Quantity & Actions */}
           <div className="flex flex-wrap items-center gap-3">
             <div className="glass-card flex items-center gap-3 px-3 py-2">
-              <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-muted-foreground hover:text-foreground">
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                className="text-muted-foreground hover:text-foreground"
+              >
                 <Minus className="h-4 w-4" />
               </button>
               <span className="w-8 text-center font-semibold text-foreground">{quantity}</span>
-              <button onClick={() => setQuantity(quantity + 1)} className="text-muted-foreground hover:text-foreground">
+              <button
+                onClick={() => setQuantity(quantity + 1)}
+                className="text-muted-foreground hover:text-foreground"
+              >
                 <Plus className="h-4 w-4" />
               </button>
             </div>
-            <Button variant="hero" size="xl" onClick={handleAddToCart} className="flex-1" disabled={addedToCart}>
+            <Button
+              variant="hero"
+              size="xl"
+              onClick={handleAddToCart}
+              className="flex-1"
+              disabled={addedToCart}
+            >
               {addedToCart ? (
-                <><Check className="mr-2 h-5 w-5" /> Added!</>
+                <>
+                  <Check className="mr-2 h-5 w-5" /> Added!
+                </>
               ) : (
-                <><ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart</>
+                <>
+                  <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+                </>
               )}
             </Button>
             <Button
@@ -289,7 +360,10 @@ function ProductDetailPage() {
             >
               {tab === "reviews" ? `Reviews (${product.reviews.toLocaleString()})` : tab}
               {activeTab === tab && (
-                <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+                <motion.div
+                  layoutId="tab-indicator"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                />
               )}
             </button>
           ))}
@@ -298,8 +372,16 @@ function ProductDetailPage() {
         <div className="mt-8">
           <AnimatePresence mode="wait">
             {activeTab === "description" && (
-              <motion.div key="desc" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
-                <p className="max-w-3xl text-muted-foreground leading-relaxed">{product.description}</p>
+              <motion.div
+                key="desc"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6"
+              >
+                <p className="max-w-3xl text-muted-foreground leading-relaxed">
+                  {product.description}
+                </p>
                 {product.highlights && product.highlights.length > 0 && (
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {product.highlights.map((h) => (
@@ -319,8 +401,16 @@ function ProductDetailPage() {
                     <Package className="h-5 w-5 text-primary" /> What's in the Box
                   </h3>
                   <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-                    {[`1x ${product.name}`, "USB-C Cable", "Quick Start Guide", "Warranty Card"].map((item) => (
-                      <li key={item} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    {[
+                      `1x ${product.name}`,
+                      "USB-C Cable",
+                      "Quick Start Guide",
+                      "Warranty Card",
+                    ].map((item) => (
+                      <li
+                        key={item}
+                        className="flex items-center gap-2 text-sm text-muted-foreground"
+                      >
                         <Check className="h-3.5 w-3.5 text-primary" /> {item}
                       </li>
                     ))}
@@ -330,11 +420,19 @@ function ProductDetailPage() {
             )}
 
             {activeTab === "specs" && (
-              <motion.div key="specs" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
+              <motion.div
+                key="specs"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
                 <div className="glass-card overflow-hidden">
                   <dl className="divide-y divide-border/30">
                     {Object.entries(product.specs).map(([key, val], i) => (
-                      <div key={key} className={`flex justify-between px-6 py-4 text-sm ${i % 2 === 0 ? "bg-secondary/20" : ""}`}>
+                      <div
+                        key={key}
+                        className={`flex justify-between px-6 py-4 text-sm ${i % 2 === 0 ? "bg-secondary/20" : ""}`}
+                      >
                         <dt className="font-medium text-muted-foreground">{key}</dt>
                         <dd className="font-semibold text-foreground">{val}</dd>
                       </div>
@@ -345,17 +443,30 @@ function ProductDetailPage() {
             )}
 
             {activeTab === "reviews" && (
-              <motion.div key="reviews" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-8">
+              <motion.div
+                key="reviews"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-8"
+              >
                 {/* Rating Summary */}
                 <div className="glass-card grid gap-8 p-6 sm:grid-cols-2">
                   <div className="text-center">
-                    <div className="font-display text-6xl font-bold text-foreground">{product.rating}</div>
+                    <div className="font-display text-6xl font-bold text-foreground">
+                      {product.rating}
+                    </div>
                     <div className="mt-2 flex items-center justify-center gap-0.5">
                       {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className={`h-5 w-5 ${i < Math.floor(product.rating) ? "fill-warning text-warning" : "text-muted"}`} />
+                        <Star
+                          key={i}
+                          className={`h-5 w-5 ${i < Math.floor(product.rating) ? "fill-warning text-warning" : "text-muted"}`}
+                        />
                       ))}
                     </div>
-                    <p className="mt-1 text-sm text-muted-foreground">Based on {product.reviews.toLocaleString()} reviews</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Based on {product.reviews.toLocaleString()} reviews
+                    </p>
                   </div>
                   <div className="space-y-2">
                     {[5, 4, 3, 2, 1].map((star) => {
@@ -365,7 +476,10 @@ function ProductDetailPage() {
                           <span className="w-3 text-muted-foreground">{star}</span>
                           <Star className="h-3 w-3 fill-warning text-warning" />
                           <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary/50">
-                            <div className="h-full rounded-full bg-warning transition-all" style={{ width: `${pct}%` }} />
+                            <div
+                              className="h-full rounded-full bg-warning transition-all"
+                              style={{ width: `${pct}%` }}
+                            />
                           </div>
                           <span className="w-8 text-right text-muted-foreground">{pct}%</span>
                         </div>
@@ -387,9 +501,13 @@ function ProductDetailPage() {
                     className="mx-auto flex items-center gap-2 text-sm font-medium text-primary hover:underline"
                   >
                     {showAllReviews ? (
-                      <><ChevronUp className="h-4 w-4" /> Show less</>
+                      <>
+                        <ChevronUp className="h-4 w-4" /> Show less
+                      </>
                     ) : (
-                      <><ChevronDown className="h-4 w-4" /> Show all {reviews.length} reviews</>
+                      <>
+                        <ChevronDown className="h-4 w-4" /> Show all {reviews.length} reviews
+                      </>
                     )}
                   </button>
                 )}
@@ -403,9 +521,12 @@ function ProductDetailPage() {
       <section className="mt-16">
         <h2 className="section-heading mb-8 text-2xl text-foreground">You May Also Like</h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredProducts.filter((p) => p.id !== product.id).slice(0, 4).map((p, i) => (
-            <ProductCard key={p.id} product={p} index={i} />
-          ))}
+          {featuredProducts
+            .filter((p) => p.id !== product.id)
+            .slice(0, 4)
+            .map((p, i) => (
+              <ProductCard key={p.id} product={p} index={i} />
+            ))}
         </div>
       </section>
     </div>
@@ -419,7 +540,11 @@ function ReviewCard({ review }: { review: ReviewData }) {
     <div className="glass-card p-5">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <img src={review.avatar} alt={review.author} className="h-10 w-10 rounded-full object-cover" />
+          <img
+            src={review.avatar}
+            alt={review.author}
+            className="h-10 w-10 rounded-full object-cover"
+          />
           <div>
             <div className="flex items-center gap-2">
               <span className="text-sm font-semibold text-foreground">{review.author}</span>
@@ -429,12 +554,21 @@ function ReviewCard({ review }: { review: ReviewData }) {
                 </span>
               )}
             </div>
-            <span className="text-xs text-muted-foreground">{new Date(review.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</span>
+            <span className="text-xs text-muted-foreground">
+              {new Date(review.date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-0.5">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} className={`h-3.5 w-3.5 ${i < review.rating ? "fill-warning text-warning" : "text-muted"}`} />
+            <Star
+              key={i}
+              className={`h-3.5 w-3.5 ${i < review.rating ? "fill-warning text-warning" : "text-muted"}`}
+            />
           ))}
         </div>
       </div>

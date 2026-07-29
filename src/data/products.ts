@@ -176,33 +176,39 @@ const defaultReviews: ReviewData[] = [
   {
     id: "r1",
     author: "Alex M.",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face",
+    avatar:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face",
     rating: 5,
     date: "2026-04-12",
     title: "Absolutely love it!",
-    comment: "Best purchase I've made this year. The build quality is outstanding and performance exceeds expectations. Highly recommend to anyone looking for a premium experience.",
+    comment:
+      "Best purchase I've made this year. The build quality is outstanding and performance exceeds expectations. Highly recommend to anyone looking for a premium experience.",
     verified: true,
     helpful: 42,
   },
   {
     id: "r2",
     author: "Sarah K.",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=40&h=40&fit=crop&crop=face",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=40&h=40&fit=crop&crop=face",
     rating: 4,
     date: "2026-03-28",
     title: "Great product, minor nitpick",
-    comment: "Really solid product overall. The design is sleek and it performs beautifully. Only giving 4 stars because the price is a bit steep, but you get what you pay for.",
+    comment:
+      "Really solid product overall. The design is sleek and it performs beautifully. Only giving 4 stars because the price is a bit steep, but you get what you pay for.",
     verified: true,
     helpful: 18,
   },
   {
     id: "r3",
     author: "James T.",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face",
     rating: 5,
     date: "2026-03-15",
     title: "Worth every penny",
-    comment: "Upgraded from a 3-year-old model and the difference is night and day. The screen quality, speed, and battery life are all phenomenal.",
+    comment:
+      "Upgraded from a 3-year-old model and the difference is night and day. The screen quality, speed, and battery life are all phenomenal.",
     verified: false,
     helpful: 31,
   },
@@ -212,7 +218,8 @@ const defaultRatingBreakdown = { 5: 65, 4: 22, 3: 8, 2: 3, 1: 2 };
 
 const productDetails: Record<string, Omit<ProductDetail, keyof Product>> = {
   "1": {
-    description: "The most powerful iPhone ever. Featuring a titanium design, the A17 Pro chip, and a 48MP camera system with 5x optical zoom. Capture stunning photos in any light with the advanced computational photography engine.",
+    description:
+      "The most powerful iPhone ever. Featuring a titanium design, the A17 Pro chip, and a 48MP camera system with 5x optical zoom. Capture stunning photos in any light with the advanced computational photography engine.",
     specs: {
       Display: '6.7" Super Retina XDR OLED',
       Chip: "A17 Pro",
@@ -242,14 +249,51 @@ const productDetails: Record<string, Omit<ProductDetail, keyof Product>> = {
       "USB-C with USB 3 speeds",
     ],
     customerReviews: [
-      { id: "r1", author: "Mike R.", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face", rating: 5, date: "2026-04-20", title: "Best iPhone ever made", comment: "The titanium build feels incredible in hand. Camera system is unreal — the 5x zoom changed how I take photos. Battery easily lasts all day.", verified: true, helpful: 89 },
-      { id: "r2", author: "Lisa C.", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=40&h=40&fit=crop&crop=face", rating: 4, date: "2026-04-05", title: "Almost perfect", comment: "Incredible phone. Only wish the base storage was 256GB for the price. Otherwise, everything from display to performance is top-tier.", verified: true, helpful: 34 },
-      { id: "r3", author: "David P.", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face", rating: 5, date: "2026-03-18", title: "Worth the upgrade", comment: "Came from iPhone 13 Pro — the speed difference is massive. ProMotion display is buttery smooth and the new Action Button is surprisingly useful.", verified: true, helpful: 56 },
+      {
+        id: "r1",
+        author: "Mike R.",
+        avatar:
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face",
+        rating: 5,
+        date: "2026-04-20",
+        title: "Best iPhone ever made",
+        comment:
+          "The titanium build feels incredible in hand. Camera system is unreal — the 5x zoom changed how I take photos. Battery easily lasts all day.",
+        verified: true,
+        helpful: 89,
+      },
+      {
+        id: "r2",
+        author: "Lisa C.",
+        avatar:
+          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=40&h=40&fit=crop&crop=face",
+        rating: 4,
+        date: "2026-04-05",
+        title: "Almost perfect",
+        comment:
+          "Incredible phone. Only wish the base storage was 256GB for the price. Otherwise, everything from display to performance is top-tier.",
+        verified: true,
+        helpful: 34,
+      },
+      {
+        id: "r3",
+        author: "David P.",
+        avatar:
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face",
+        rating: 5,
+        date: "2026-03-18",
+        title: "Worth the upgrade",
+        comment:
+          "Came from iPhone 13 Pro — the speed difference is massive. ProMotion display is buttery smooth and the new Action Button is surprisingly useful.",
+        verified: true,
+        helpful: 56,
+      },
     ],
     ratingBreakdown: { 5: 72, 4: 18, 3: 6, 2: 3, 1: 1 },
   },
   "2": {
-    description: "Supercharged by the M3 Pro chip, the MacBook Pro delivers exceptional performance and battery life in a stunning Liquid Retina XDR display. Perfect for developers, creatives, and power users.",
+    description:
+      "Supercharged by the M3 Pro chip, the MacBook Pro delivers exceptional performance and battery life in a stunning Liquid Retina XDR display. Perfect for developers, creatives, and power users.",
     specs: {
       Display: '14.2" Liquid Retina XDR',
       Chip: "Apple M3 Pro",
@@ -277,8 +321,32 @@ const productDetails: Record<string, Omit<ProductDetail, keyof Product>> = {
       "Six-speaker sound system",
     ],
     customerReviews: [
-      { id: "r1", author: "Chris W.", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face", rating: 5, date: "2026-04-15", title: "Developer's dream machine", comment: "Compiles my entire project in seconds. The display is gorgeous for design work and battery lasts through my entire workday. Best laptop I've owned.", verified: true, helpful: 67 },
-      { id: "r2", author: "Emma S.", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=40&h=40&fit=crop&crop=face", rating: 5, date: "2026-03-22", title: "Perfect for creative work", comment: "Video editing in 4K is seamless. The color accuracy on this display is incredible for photo editing. Worth every penny.", verified: true, helpful: 45 },
+      {
+        id: "r1",
+        author: "Chris W.",
+        avatar:
+          "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face",
+        rating: 5,
+        date: "2026-04-15",
+        title: "Developer's dream machine",
+        comment:
+          "Compiles my entire project in seconds. The display is gorgeous for design work and battery lasts through my entire workday. Best laptop I've owned.",
+        verified: true,
+        helpful: 67,
+      },
+      {
+        id: "r2",
+        author: "Emma S.",
+        avatar:
+          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=40&h=40&fit=crop&crop=face",
+        rating: 5,
+        date: "2026-03-22",
+        title: "Perfect for creative work",
+        comment:
+          "Video editing in 4K is seamless. The color accuracy on this display is incredible for photo editing. Worth every penny.",
+        verified: true,
+        helpful: 45,
+      },
     ],
     ratingBreakdown: { 5: 78, 4: 15, 3: 4, 2: 2, 1: 1 },
   },

@@ -53,13 +53,38 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             loading="lazy"
           />
           <div className="absolute inset-0 flex items-center justify-center gap-2 bg-background/60 opacity-0 backdrop-blur-sm transition-opacity duration-300 group-hover:opacity-100">
-            <Button variant="glass" size="icon" className={`h-10 w-10 rounded-full ${liked ? "text-sale" : ""}`} onClick={(e) => { e.preventDefault(); toggleWishlist(product.id); }}>
+            <Button
+              variant="glass"
+              size="icon"
+              className={`h-10 w-10 rounded-full ${liked ? "text-sale" : ""}`}
+              onClick={(e) => {
+                e.preventDefault();
+                toggleWishlist(product.id);
+              }}
+            >
               <Heart className={`h-4 w-4 ${liked ? "fill-current" : ""}`} />
             </Button>
-            <Button variant="neon" size="icon" className="h-10 w-10 rounded-full" onClick={(e) => { e.preventDefault(); addItem(product); }}>
+            <Button
+              variant="neon"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+              onClick={(e) => {
+                e.preventDefault();
+                addItem(product);
+              }}
+            >
               <ShoppingCart className="h-4 w-4" />
             </Button>
-            <Button variant="glass" size="icon" className="h-10 w-10 rounded-full" onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.location.href = `/products/${product.id}`; }}>
+            <Button
+              variant="glass"
+              size="icon"
+              className="h-10 w-10 rounded-full"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.location.href = `/products/${product.id}`;
+              }}
+            >
               <Eye className="h-4 w-4" />
             </Button>
           </div>

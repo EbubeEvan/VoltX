@@ -34,13 +34,12 @@ export function HeroSection() {
           </div>
 
           <h1 className="font-display text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-7xl">
-            Next-Gen Tech,{" "}
-            <span className="gradient-text">Delivered.</span>
+            Next-Gen Tech, <span className="gradient-text">Delivered.</span>
           </h1>
 
           <p className="mt-6 max-w-lg text-lg text-muted-foreground">
-            Discover the latest smartphones, laptops, and smart devices from the world's
-            leading brands. Premium tech at unbeatable prices.
+            Discover the latest smartphones, laptops, and smart devices from the world's leading
+            brands. Premium tech at unbeatable prices.
           </p>
 
           <div className="mt-10 flex flex-wrap gap-4">

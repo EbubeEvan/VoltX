@@ -8,7 +8,7 @@ export function Newsletter() {
         {/* Glow background */}
         <div className="absolute -left-20 -top-20 h-60 w-60 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute -bottom-20 -right-20 h-60 w-60 rounded-full bg-[oklch(0.65_0.2_280/10%)] blur-3xl" />
-        
+
         <div className="relative">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
             <Mail className="h-6 w-6 text-primary" />

@@ -28,16 +28,24 @@ function ProfilePage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 lg:px-8">
       {/* Profile Header */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card flex flex-wrap items-center gap-6 p-6">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass-card flex flex-wrap items-center gap-6 p-6"
+      >
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/20">
           <User className="h-10 w-10 text-primary" />
         </div>
         <div className="flex-1">
           <h1 className="font-display text-2xl font-bold text-foreground">Alex Johnson</h1>
           <p className="text-sm text-muted-foreground">alex.johnson@email.com</p>
-          <p className="mt-1 text-xs text-muted-foreground">Member since January 2025 • VoltX Gold Member</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Member since January 2025 • VoltX Gold Member
+          </p>
         </div>
-        <Button variant="glass" size="sm"><Settings className="mr-1.5 h-3.5 w-3.5" /> Edit Profile</Button>
+        <Button variant="glass" size="sm">
+          <Settings className="mr-1.5 h-3.5 w-3.5" /> Edit Profile
+        </Button>
       </motion.div>
 
       {/* Quick Stats */}
@@ -48,7 +56,13 @@ function ProfilePage() {
           { icon: MapPin, label: "Addresses", value: "2" },
           { icon: CreditCard, label: "Cards", value: "3" },
         ].map(({ icon: Icon, label, value }, i) => (
-          <motion.div key={label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }} className="glass-card p-4 text-center">
+          <motion.div
+            key={label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08 }}
+            className="glass-card p-4 text-center"
+          >
             <Icon className="mx-auto h-5 w-5 text-primary" />
             <p className="mt-2 font-display text-2xl font-bold text-foreground">{value}</p>
             <p className="text-xs text-muted-foreground">{label}</p>
@@ -61,14 +75,23 @@ function ProfilePage() {
         <h2 className="section-heading mb-4 text-xl text-foreground">Recent Orders</h2>
         <div className="space-y-3">
           {mockOrders.map((order) => (
-            <div key={order.id} className="glass-card flex flex-wrap items-center justify-between gap-4 p-4">
+            <div
+              key={order.id}
+              className="glass-card flex flex-wrap items-center justify-between gap-4 p-4"
+            >
               <div>
                 <p className="font-semibold text-foreground">{order.id}</p>
-                <p className="text-xs text-muted-foreground">{order.date} • {order.items} items</p>
+                <p className="text-xs text-muted-foreground">
+                  {order.date} • {order.items} items
+                </p>
               </div>
               <div className="text-right">
-                <p className="font-display font-bold text-foreground">${order.total.toLocaleString()}</p>
-                <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${order.status === "Delivered" ? "bg-success/20 text-success" : "bg-primary/20 text-primary"}`}>
+                <p className="font-display font-bold text-foreground">
+                  ${order.total.toLocaleString()}
+                </p>
+                <span
+                  className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${order.status === "Delivered" ? "bg-success/20 text-success" : "bg-primary/20 text-primary"}`}
+                >
                   {order.status}
                 </span>
               </div>
@@ -83,8 +106,14 @@ function ProfilePage() {
         {wishlisted.length === 0 ? (
           <div className="glass-card p-8 text-center">
             <Heart className="mx-auto h-10 w-10 text-muted-foreground" />
-            <p className="mt-3 text-muted-foreground">Your wishlist is empty. Browse products and tap the heart icon to save items.</p>
-            <Link to="/products"><Button variant="glass" size="sm" className="mt-4">Browse Products</Button></Link>
+            <p className="mt-3 text-muted-foreground">
+              Your wishlist is empty. Browse products and tap the heart icon to save items.
+            </p>
+            <Link to="/products">
+              <Button variant="glass" size="sm" className="mt-4">
+                Browse Products
+              </Button>
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
