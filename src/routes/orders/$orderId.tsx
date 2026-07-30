@@ -30,10 +30,14 @@ export const Route = createFileRoute("/orders/$orderId")({
   head: ({ loaderData }) => ({
     meta: [
       {
-        title: `Order ORD-${new Date().getFullYear()}-${String(loaderData.order.id).padStart(3, "0")} — VoltX`,
+        title: loaderData
+          ? `Order ORD-${new Date().getFullYear()}-${String(loaderData.order.id).padStart(3, "0")} — VoltX`
+          : "Order — VoltX",
       },
+      { name: "robots", content: "noindex" },
     ],
   }),
+
   component: OrderPage,
 });
 

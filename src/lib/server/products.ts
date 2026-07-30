@@ -1,67 +1,77 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getDb } from "@/lib/db";
 import { products } from "@/lib/db/schema";
-import { eq, sql } from "drizzle-orm";
+import type { Product } from "@/lib/db/schema";
+import { fallbackProducts } from "@/lib/db/fallback";
+import { eq } from "drizzle-orm";
 
-export const getProducts = createServerFn({ method: "GET" }).handler(async () => {
-  return getDb()!.select().from(products).orderBy(products.id);
-});
+async function allProducts(): Promise<Product[]> {
+  const db = getDb();
+  if (!db) return fallbackProducts;
+  try {
+    return (await db.select().from(products).orderBy(products.id)) as Product[];
+  } catch (error) {
+    console.error("Falling back to static catalogue:", error);
+    return fallbackProducts;
+  }
+}
+
+function range(list: Product[], min: number, max: number) {
+  return list.filter((p) => p.id >= min && p.id <= max);
+}
+
+export const getProducts = createServerFn({ method: "GET" }).handler(async () => allProducts());
 
 export const getProductById = createServerFn({ method: "GET" })
   .inputValidator((id: number) => id)
   .handler(async ({ data: id }) => {
-    const [product] = await getDb()!.select().from(products).where(eq(products.id, id));
-    return product || null;
+    const db = getDb();
+    if (db) {
+      try {
+        const [product] = await db.select().from(products).where(eq(products.id, id));
+        return (product as Product) ?? null;
+      } catch (error) {
+        console.error("Falling back to static catalogue:", error);
+      }
+    }
+    return fallbackProducts.find((p) => p.id === id) ?? null;
   });
 
-export const getFeaturedProducts = createServerFn({ method: "GET" }).handler(async () => {
-  return getDb()!
-    .select()
-    .from(products)
-    .where(sql`id <= 6`)
-    .orderBy(products.id);
-});
+export const getFeaturedProducts = createServerFn({ method: "GET" }).handler(async () =>
+  range(await allProducts(), 1, 6),
+);
 
-export const getNewArrivals = createServerFn({ method: "GET" }).handler(async () => {
-  return getDb()!
-    .select()
-    .from(products)
-    .where(sql`id >= 7 AND id <= 10`)
-    .orderBy(products.id);
-});
+export const getNewArrivals = createServerFn({ method: "GET" }).handler(async () =>
+  range(await allProducts(), 7, 10),
+);
 
-export const getFlashDeals = createServerFn({ method: "GET" }).handler(async () => {
-  return getDb()!
-    .select()
-    .from(products)
-    .where(sql`id >= 11 AND id <= 13`)
-    .orderBy(products.id);
-});
+export const getFlashDeals = createServerFn({ method: "GET" }).handler(async () =>
+  range(await allProducts(), 11, 13),
+);
 
 export const getProductsByBrand = createServerFn({ method: "GET" })
   .inputValidator((brand: string) => brand)
   .handler(async ({ data: brand }) => {
-    return getDb()!.select().from(products).where(eq(products.brand, brand)).orderBy(products.id);
+    const db = getDb();
+    if (db) {
+      try {
+        return (await db
+          .select()
+          .from(products)
+          .where(eq(products.brand, brand))
+          .orderBy(products.id)) as Product[];
+      } catch (error) {
+        console.error("Falling back to static catalogue:", error);
+      }
+    }
+    return fallbackProducts.filter((p) => p.brand === brand);
   });
 
 export const getHomePageData = createServerFn({ method: "GET" }).handler(async () => {
-  const db = getDb()!;
-  const [featured, arrivals, deals] = await Promise.all([
-    db
-      .select()
-      .from(products)
-      .where(sql`id <= 6`)
-      .orderBy(products.id),
-    db
-      .select()
-      .from(products)
-      .where(sql`id >= 7 AND id <= 10`)
-      .orderBy(products.id),
-    db
-      .select()
-      .from(products)
-      .where(sql`id >= 11 AND id <= 13`)
-      .orderBy(products.id),
-  ]);
-  return { featured, arrivals, deals };
+  const list = await allProducts();
+  return {
+    featured: range(list, 1, 6),
+    arrivals: range(list, 7, 10),
+    deals: range(list, 11, 13),
+  };
 });
