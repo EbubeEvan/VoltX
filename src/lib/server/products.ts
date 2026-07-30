@@ -3,7 +3,7 @@ import { getDb } from "@/lib/db";
 import { products } from "@/lib/db/schema";
 import type { Product } from "@/lib/db/schema";
 import { fallbackProducts } from "@/lib/db/fallback";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 async function allProducts(): Promise<Product[]> {
   const db = getDb();
@@ -75,6 +75,3 @@ export const getHomePageData = createServerFn({ method: "GET" }).handler(async (
     deals: range(list, 11, 13),
   };
 });
-
-// keeps `sql` import meaningful for future raw queries
-export const __sql = sql;
