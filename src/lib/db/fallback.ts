@@ -16,13 +16,12 @@ export const fallbackProducts: Product[] = seedProducts.map((p, i) => ({
   rating: p.rating ?? 0,
   reviews: p.reviews ?? 0,
   badge: p.badge ?? null,
-  category: p.category ?? null,
   description: p.description ?? null,
   specs: p.specs ?? null,
-  highlights: p.highlights ?? null,
-  colors: p.colors ?? null,
   storageOptions: p.storageOptions ?? null,
+  highlights: p.highlights ?? null,
+  customerReviews: p.customerReviews ?? null,
   ratingBreakdown: p.ratingBreakdown ?? null,
   inStock: p.inStock ?? true,
   createdAt: new Date(0),
-})) as Product[];
+}));
