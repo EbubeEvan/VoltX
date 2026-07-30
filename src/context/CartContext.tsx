@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useEffect,
-  useRef,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import type { Product } from "@/components/ProductCard";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -35,6 +27,7 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType | null>(null);
+let mergedUserId: string | null = null;
 
 type ServerCartItem = Awaited<ReturnType<typeof getServerCart>>[number];
 
@@ -78,7 +71,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [ready, setReady] = useState(false);
   const { data: session, isPending } = authClient.useSession();
-  const mergedForUser = useRef<string | null>(null);
 
   useEffect(() => {
     setItems(loadFromStorage());
@@ -94,9 +86,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const uid = session?.user?.id ?? null;
 
     if (uid) {
-      if (mergedForUser.current !== uid) {
-        const wasLoggedIn = mergedForUser.current !== null;
-        mergedForUser.current = uid;
+      if (mergedUserId !== uid) {
+        const wasLoggedIn = mergedUserId !== null;
+        mergedUserId = uid;
         const fromServer = () => getServerCart().then((res) => setItems(res.map(toCartItem)));
         if (wasLoggedIn) {
           fromServer();
@@ -116,8 +108,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
           }
         }
       }
-    } else if (mergedForUser.current !== null) {
-      mergedForUser.current = null;
+    } else if (mergedUserId !== null) {
+      mergedUserId = null;
       setItems(loadFromStorage());
     }
   }, [session, ready, isPending]);

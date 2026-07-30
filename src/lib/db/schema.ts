@@ -8,6 +8,7 @@ import {
   real,
   jsonb,
   primaryKey,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
@@ -91,6 +92,13 @@ export const orders = pgTable("orders", {
   shipping: integer("shipping").notNull().default(0),
   tax: integer("tax").notNull().default(0),
   reference: text("reference"),
+  paymentMethod: text("payment_method").notNull().default("paystack"),
+  fullName: text("full_name"),
+  phone: text("phone"),
+  address: text("address"),
+  city: text("city"),
+  state: text("state"),
+  postalCode: text("postal_code"),
   paidAt: timestamp("paid_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -107,16 +115,20 @@ export const orderItems = pgTable("order_items", {
   unitPrice: integer("unit_price").notNull(),
 });
 
-export const cartItems = pgTable("cart_items", {
-  id: serial("id").primaryKey(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  productId: integer("product_id").notNull(),
-  quantity: integer("quantity").notNull().default(1),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const cartItems = pgTable(
+  "cart_items",
+  {
+    id: serial("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    productId: integer("product_id").notNull(),
+    quantity: integer("quantity").notNull().default(1),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [uniqueIndex("cart_items_user_product_idx").on(table.userId, table.productId)],
+);
 
 export const wishlistItems = pgTable(
   "wishlist_items",

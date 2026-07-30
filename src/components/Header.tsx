@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { authClient } from "@/lib/auth-client";
+import { serverSignOut } from "@/lib/server/auth-actions";
 
 export function Header() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ export function Header() {
   const inputRef = useRef<HTMLInputElement>(null);
   const { totalItems, clearCart } = useCart();
   const { wishlist, clearWishlist } = useWishlist();
-  const { data: session, isPending } = authClient.useSession();
+  const { data: session, isPending, refetch } = authClient.useSession();
 
   useEffect(() => {
     if (searchOpen && inputRef.current) inputRef.current.focus();
@@ -32,7 +33,16 @@ export function Header() {
   async function handleLogout() {
     clearCart();
     clearWishlist();
+    await serverSignOut();
     await authClient.signOut();
+    document.cookie.split(";").forEach((c) => {
+      const trimmed = c.trim();
+      if (trimmed.startsWith("voltx.") || trimmed.startsWith("voltx-")) {
+        const name = trimmed.includes("=") ? trimmed.split("=")[0].trim() : trimmed;
+        document.cookie = `${name}=; path=/; max-age=0;`;
+      }
+    });
+    refetch();
     navigate({ to: "/" });
   }
 
@@ -113,7 +123,7 @@ export function Header() {
               )}
             </Button>
           </Link>
-          <Link to="/checkout">
+          <Link to="/cart">
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="h-4 w-4" />
               {totalItems > 0 && (
@@ -173,7 +183,7 @@ export function Header() {
                 ? [{ label: "Profile", to: "/profile" as const }]
                 : [{ label: "Sign In", to: "/login" as const }]),
               { label: "Wishlist", to: "/wishlist" as const },
-              { label: "Checkout", to: "/checkout" as const },
+              { label: "Cart", to: "/cart" as const },
             ].map((item) => (
               <Link
                 key={item.to}

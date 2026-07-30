@@ -12,6 +12,14 @@ export const createOrder = createServerFn({ method: "POST" })
       tax: number;
       total: number;
       reference: string;
+      paymentMethod: "paystack" | "pay_on_delivery";
+      fullName: string;
+      phone: string;
+      email: string;
+      address: string;
+      city: string;
+      state: string;
+      postalCode: string;
     }) => input,
   )
   .handler(async (ctx) => {
@@ -25,16 +33,25 @@ export const createOrder = createServerFn({ method: "POST" })
 
     const db = getDb()!;
 
+    const isPaid = data.paymentMethod === "paystack";
+
     const [order] = await db
       .insert(orders)
       .values({
         userId: session.user.id,
-        status: "paid",
+        status: isPaid ? "paid" : "confirmed",
         total: Math.round(data.total * 100),
         shipping: Math.round(data.shipping * 100),
         tax: Math.round(data.tax * 100),
         reference: data.reference,
-        paidAt: new Date(),
+        paymentMethod: data.paymentMethod,
+        fullName: data.fullName,
+        phone: data.phone,
+        address: data.address,
+        city: data.city,
+        state: data.state,
+        postalCode: data.postalCode,
+        paidAt: isPaid ? new Date() : null,
       })
       .returning();
 

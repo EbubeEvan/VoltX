@@ -115,7 +115,7 @@ export const mergeCart = createServerFn({ method: "POST" })
         await db
           .update(cartItems)
           .set({
-            quantity: existing[0].quantity + item.quantity,
+            quantity: item.quantity,
             updatedAt: new Date(),
           })
           .where(eq(cartItems.id, existing[0].id));

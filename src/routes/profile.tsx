@@ -1,14 +1,19 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { Package, Settings, MapPin, CreditCard } from "lucide-react";
+import { Package, Settings, MapPin, CreditCard, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getProfileData } from "@/lib/server/profile";
 import { SkeletonProfile } from "@/components/PageSkeleton";
 
 export const Route = createFileRoute("/profile")({
   loader: async () => {
-    const data = await getProfileData();
-    return { session: data.session, orders: data.orders };
+    try {
+      const data = await getProfileData();
+      if (!data.session) throw redirect({ to: "/login" });
+      return { session: data.session, orders: data.orders };
+    } catch {
+      throw redirect({ to: "/login" });
+    }
   },
   pendingComponent: SkeletonProfile,
   head: () => ({
@@ -19,11 +24,6 @@ export const Route = createFileRoute("/profile")({
   }),
   component: ProfilePage,
 });
-
-function orderIdString(id: number) {
-  const year = new Date().getFullYear();
-  return `ORD-${year}-${String(id).padStart(3, "0")}`;
-}
 
 function ProfilePage() {
   const { session, orders } = Route.useLoaderData();
@@ -87,57 +87,22 @@ function ProfilePage() {
         ))}
       </div>
 
-      {/* Recent Orders */}
-      <section className="mt-10">
-        <h2 className="section-heading mb-4 text-xl text-foreground">Recent Orders</h2>
-        {orders.length === 0 ? (
-          <div className="glass-card p-8 text-center">
-            <Package className="mx-auto h-10 w-10 text-muted-foreground" />
-            <p className="mt-3 text-muted-foreground">No orders yet.</p>
-            <Link to="/products">
-              <Button variant="glass" size="sm" className="mt-4">
-                Start Shopping
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {orders.map((order) => (
-              <Link
-                key={order.id}
-                to="/orders/$orderId"
-                params={{ orderId: String(order.id) }}
-                className="glass-card flex flex-wrap items-center justify-between gap-4 p-4 transition-colors hover:border-primary/50"
-              >
-                <div>
-                  <p className="font-display font-semibold text-foreground">
-                    {orderIdString(order.id)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {new Date(order.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                    {" • "}
-                    {order.itemCount} {order.itemCount === 1 ? "item" : "items"}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-display font-bold text-foreground">
-                    ₦{(order.total / 100).toLocaleString()}
-                  </p>
-                  <span
-                    className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${order.status === "delivered" || order.status === "shipped" ? "bg-success/20 text-success" : "bg-primary/20 text-primary"}`}
-                  >
-                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+      {/* View Orders */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="mt-8"
+      >
+        <Link to="/orders">
+          <Button variant="glass" size="lg" className="w-full justify-between">
+            <span className="flex items-center gap-2">
+              <Package className="h-4 w-4" /> View All Orders
+            </span>
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </Link>
+      </motion.div>
     </div>
   );
 }
