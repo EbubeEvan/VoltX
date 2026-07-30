@@ -499,4 +499,3 @@ export const seedProducts: NewProduct[] = [
     ratingBreakdown: { "5": 82, "4": 12, "3": 4, "2": 1, "1": 1 },
   },
 ];
-];
