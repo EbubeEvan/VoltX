@@ -12,10 +12,10 @@ export function HeroSection() {
         <img
           src={heroBanner}
           alt="Next-gen electronics"
-          className="h-full w-full object-cover opacity-40"
+          className="h-full w-full object-cover opacity-85"
         />
-        <div className="absolute inset-0 bg-[image:var(--gradient-hero)] opacity-70" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+        <div className="absolute inset-0 bg-background/15" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
       </div>
 
       {/* Content */}
@@ -34,7 +34,7 @@ export function HeroSection() {
           </div>
 
           <h1 className="font-display text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-7xl">
-            Next-Gen Tech, <span className="gradient-text">Delivered.</span>
+            Next-Gen Tech, Delivered.
           </h1>
 
           <p className="mt-6 max-w-lg text-lg text-muted-foreground">
