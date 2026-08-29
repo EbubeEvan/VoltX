@@ -125,6 +125,7 @@ function RootComponent() {
         <WishlistProvider>
           <div className="flex min-h-screen flex-col overflow-x-hidden">
             <Header />
+            <div className="h-16 shrink-0" aria-hidden="true" />
             <main className="flex-1">
               <Outlet />
             </main>

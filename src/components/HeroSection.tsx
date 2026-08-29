@@ -6,16 +6,20 @@ import heroBanner from "@/assets/hero-banner.jpg";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden">
+    <section className="relative -mt-16 overflow-hidden bg-background pt-16 min-h-[480px] lg:min-h-[520px] xl:min-h-[560px] 2xl:min-h-[600px]">
       {/* Background */}
-      <div className="absolute inset-0">
-        <img
-          src={heroBanner}
-          alt="Next-gen electronics"
-          className="h-full w-full object-cover opacity-85"
-        />
-        <div className="absolute inset-0 bg-background/15" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+      <div className="absolute inset-0 flex justify-center">
+        <div className="relative h-full w-full max-w-[1920px]">
+          <img
+            src={heroBanner}
+            alt="Next-gen electronics"
+            className="h-full w-full object-cover object-center opacity-85"
+          />
+          <div className="absolute inset-0 bg-background/15" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+          <div className="absolute inset-y-0 left-0 hidden w-[20%] bg-gradient-to-r from-background to-transparent min-[1920px]:block" />
+          <div className="absolute inset-y-0 right-0 hidden w-[20%] bg-gradient-to-l from-background to-transparent min-[1920px]:block" />
+        </div>
       </div>
 
       {/* Content */}

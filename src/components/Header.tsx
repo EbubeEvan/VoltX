@@ -12,6 +12,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [scrolled, setScrolled] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { totalItems, clearCart } = useCart();
   const { wishlist, clearWishlist } = useWishlist();
@@ -20,6 +21,13 @@ export function Header() {
   useEffect(() => {
     if (searchOpen && inputRef.current) inputRef.current.focus();
   }, [searchOpen]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   function handleSearch() {
     const q = searchQuery.trim();
@@ -47,7 +55,13 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 w-full border-b transition-all duration-300 ${
+        scrolled
+          ? "border-border/50 bg-background/80 shadow-[0_4px_30px_rgba(0,0,0,0.2)] backdrop-blur-xl"
+          : "border-transparent bg-transparent backdrop-blur-none"
+      }`}
+    >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 lg:px-8">
         <Link to="/" className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
